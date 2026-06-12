@@ -1,0 +1,15 @@
+{
+	"name": "datafactorybdstest-datastage2adf",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d6b223f3-5ecf-4fea-9c7b-1c61e76322d3",
+		"tenantId": "7fd0e6b4-9603-4946-ae06-8a261b793e86"
+	}
+}
