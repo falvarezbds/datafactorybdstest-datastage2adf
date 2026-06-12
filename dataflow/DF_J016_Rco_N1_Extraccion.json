@@ -1,0 +1,75 @@
+{
+    "name": "DF_J016_Rco_N1_Extraccion",
+    "properties": {
+        "description": "Equivalente al job J016_Rco_N1_1_Extraccion: extrae de Sybase Ulysses_II (stage Syb_Ulisses_II), aplica transformación (Trf_Ulisses_II: filtro fecha válida, formateo de fecha, default cli_cod_bca) y elimina duplicados (Remove_Duplicates_13, keep=first por rco_cic_cli/rco_cic_ope/rco_fec_trn). El resultado se escribe en staging (reemplaza Copy_of_Ds_Syb_Rco / *_Extraccion.ds).",
+        "type": "MappingDataFlow",
+        "typeProperties": {
+            "sources": [
+                {
+                    "dataset": {
+                        "referenceName": "DS_Sybase_Origen_Rco",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "ServidorBD": "@$ServidorOrigen",
+                            "BaseDatos": "@$BaseDatosOrigenCnn",
+                            "Usuario": "@$UsuarioOrigen"
+                        }
+                    },
+                    "name": "SybUlissesII"
+                }
+            ],
+            "sinks": [
+                {
+                    "dataset": {
+                        "referenceName": "DS_Staging_Extraccion",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "PathTemp": "@$PathTemp",
+                            "NombreJob": "@$NombreJob"
+                        }
+                    },
+                    "name": "DsSybRco"
+                }
+            ],
+            "transformations": [
+                { "name": "FiltroFechaValida" },
+                { "name": "DerivarColumnas" },
+                { "name": "QuitarDuplicados" }
+            ],
+            "scriptLines": [
+                "parameters{",
+                "     BaseDatosOrigen as string ('Ulysses_II'),",
+                "     ServidorOrigen as string,",
+                "     BaseDatosOrigenCnn as string,",
+                "     UsuarioOrigen as string,",
+                "     PathTemp as string,",
+                "     NombreJob as string",
+                "}",
+                "source(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     query: (\"SELECT R.rco_cic_cli, R.rco_cic_ope, R.rco_fec_trn, R.rco_cod_sta, R.rco_cod_opr, CONVERT(numeric(18,0), CONVERT(VARCHAR(12), C.cli_idc)) AS cli_idc, C.cli_vrt, ISNULL(P.cli_cod_bca, E.cli_cod_bca) AS cli_cod_bca, C.cli_ind_per_emp \" +",
+                "     \"FROM \" + $BaseDatosOrigen + \".dbo.rco R \" +",
+                "     \"INNER JOIN \" + $BaseDatosOrigen + \".dbo.cli C ON R.rco_cic_cli = C.cli_cic \" +",
+                "     \"LEFT JOIN \" + $BaseDatosOrigen + \".dbo.dcp P ON R.rco_cic_cli = P.cli_cic \" +",
+                "     \"LEFT JOIN \" + $BaseDatosOrigen + \".dbo.dce E ON R.rco_cic_cli = E.cli_cic \" +",
+                "     \"INNER JOIN (SELECT MX.rco_cic_cli, MX.rco_cic_ope, MAX(MX.rco_fec_trn) AS max_fec_trn FROM \" + $BaseDatosOrigen + \".dbo.rco MX WHERE MX.rco_cod_opr IN ('CTA','CPR','CCX','CTE','CCT') GROUP BY MX.rco_cic_cli, MX.rco_cic_ope) AS RMAX \" +",
+                "     \"  ON R.rco_cic_cli = RMAX.rco_cic_cli AND R.rco_cic_ope = RMAX.rco_cic_ope AND R.rco_fec_trn = RMAX.max_fec_trn \" +",
+                "     \"WHERE R.rco_cod_opr IN ('CTA','CPR','CCX','CTE','CCT') AND (P.cli_cic IS NOT NULL OR E.cli_cic IS NOT NULL)\")) ~> SybUlissesII",
+                "SybUlissesII filter(isValid(toDate(rco_fec_trn, 'yyyyMMdd'))) ~> FiltroFechaValida",
+                "FiltroFechaValida derive(rco_fec_trn = toDate(rco_fec_trn, 'yyyyMMdd'),",
+                "          cli_cod_bca = iif(isNull(cli_cod_bca) || trim(cli_cod_bca) == '', ' ', cli_cod_bca)) ~> DerivarColumnas",
+                "DerivarColumnas aggregate(groupBy(rco_cic_cli, rco_cic_ope, rco_fec_trn),",
+                "          rco_cod_sta = first(rco_cod_sta),",
+                "          rco_cod_opr = first(rco_cod_opr),",
+                "          cli_idc = first(cli_idc),",
+                "          cli_vrt = first(cli_vrt),",
+                "          cli_cod_bca = first(cli_cod_bca),",
+                "          cli_ind_per_emp = first(cli_ind_per_emp)) ~> QuitarDuplicados",
+                "QuitarDuplicados sink(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     truncate: true,",
+                "     format: 'parquet') ~> DsSybRco"
+            ]
+        }
+    }
+}

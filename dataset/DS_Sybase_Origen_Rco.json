@@ -1,0 +1,30 @@
+{
+    "name": "DS_Sybase_Origen_Rco",
+    "properties": {
+        "description": "Dataset origen sobre la base Ulysses_II. La extracción real se realiza mediante consulta SQL (USERSQL) definida en el Data Flow DF_J016_Rco_Extraccion, equivalente a la consulta del stage 'Syb_Ulisses_II'.",
+        "linkedServiceName": {
+            "referenceName": "LS_Sybase_Origen_Ulysses",
+            "type": "LinkedServiceReference",
+            "parameters": {
+                "ServidorBD": "@dataset().ServidorBD",
+                "BaseDatos": "@dataset().BaseDatos",
+                "Usuario": "@dataset().Usuario"
+            }
+        },
+        "parameters": {
+            "ServidorBD": {
+                "type": "string"
+            },
+            "BaseDatos": {
+                "type": "string"
+            },
+            "Usuario": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "SybaseTable",
+        "schema": [],
+        "typeProperties": {}
+    }
+}

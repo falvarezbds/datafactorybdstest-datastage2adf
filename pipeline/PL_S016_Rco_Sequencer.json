@@ -1,0 +1,117 @@
+{
+    "name": "PL_S016_Rco_Sequencer",
+    "properties": {
+        "description": "Migración del secuenciador S016_Rco_Sequencer: ejecuta N1 (Extracción), luego N2 (Carga) y finalmente elimina el archivo de staging (equivalente al stage 'Borra_Ds' / orchadmin rm -f *.ds).",
+        "activities": [
+            {
+                "name": "Ejecutar_J016_Rco_N1_1_Extraccion",
+                "type": "ExecutePipeline",
+                "dependsOn": [],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "PL_J016_Rco_N1_1_Extraccion",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "FechaProceso": "@pipeline().parameters.FechaProceso",
+                        "NombreJob": "@pipeline().parameters.NombreJob",
+                        "SybaseUlysses_II_Ley_Cnn": "@pipeline().parameters.SybaseUlysses_II_Ley_Cnn",
+                        "SybaseUlysses_II_Ley_Usr": "@pipeline().parameters.SybaseUlysses_II_Ley_Usr",
+                        "SybaseUlysses_II_Ley_Bd_Dgc": "@pipeline().parameters.SybaseUlysses_II_Ley_Bd_Dgc",
+                        "PathTemp": "@pipeline().parameters.PathTemp"
+                    }
+                }
+            },
+            {
+                "name": "Ejecutar_J016_Rco_N2_1_Carga",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Ejecutar_J016_Rco_N1_1_Extraccion",
+                        "dependencyConditions": ["Succeeded"]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "PL_J016_Rco_N2_1_Carga",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true,
+                    "parameters": {
+                        "FechaProceso": "@pipeline().parameters.FechaProceso",
+                        "NombreJob": "@pipeline().parameters.NombreJob",
+                        "SybaseIsybwebcache_I_Ley_Cnn": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Cnn",
+                        "SybaseIsybwebcache_I_Ley_Usr": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Usr",
+                        "SybaseIsybwebcache_I_Ley_Bd": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Bd",
+                        "PathTemp": "@pipeline().parameters.PathTemp"
+                    }
+                }
+            },
+            {
+                "name": "Borra_Ds",
+                "type": "Delete",
+                "description": "Elimina el archivo de staging *_Extraccion.parquet, equivalente a 'orchadmin rm -f -x #PathTemp##NombreJob#*.ds'.",
+                "dependsOn": [
+                    {
+                        "activity": "Ejecutar_J016_Rco_N2_1_Carga",
+                        "dependencyConditions": ["Succeeded"]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "dataset": {
+                        "referenceName": "DS_Staging_Extraccion",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "PathTemp": "@pipeline().parameters.PathTemp",
+                            "NombreJob": "@pipeline().parameters.NombreJob"
+                        }
+                    },
+                    "enableLogging": false,
+                    "storeSettings": {
+                        "type": "AzureBlobFSReadSettings",
+                        "recursive": true,
+                        "enablePartitionDiscovery": false
+                    }
+                }
+            }
+        ],
+        "parameters": {
+            "FechaProceso": {
+                "type": "string"
+            },
+            "NombreJob": {
+                "type": "string",
+                "defaultValue": "J016_Rco"
+            },
+            "SybaseUlysses_II_Ley_Cnn": {
+                "type": "string"
+            },
+            "SybaseUlysses_II_Ley_Usr": {
+                "type": "string"
+            },
+            "SybaseUlysses_II_Ley_Bd_Dgc": {
+                "type": "string"
+            },
+            "SybaseIsybwebcache_I_Ley_Cnn": {
+                "type": "string"
+            },
+            "SybaseIsybwebcache_I_Ley_Usr": {
+                "type": "string"
+            },
+            "SybaseIsybwebcache_I_Ley_Bd": {
+                "type": "string"
+            },
+            "PathTemp": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "folder": {
+            "name": "Ley21713/Sybase/016_Rco"
+        }
+    }
+}

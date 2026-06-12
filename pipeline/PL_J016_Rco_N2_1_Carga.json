@@ -1,0 +1,62 @@
+{
+    "name": "PL_J016_Rco_N2_1_Carga",
+    "properties": {
+        "description": "Migración del job J016_Rco_N2_1_Carga (carga del staging generado por N1 hacia la tabla syb_rco en Sybase Isybwebcache mediante upsert).",
+        "activities": [
+            {
+                "name": "DF_Carga_RCO",
+                "type": "ExecuteDataFlow",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "DF_J016_Rco_N2_Carga",
+                        "type": "DataFlowReference",
+                        "parameters": {
+                            "ServidorDestino": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Cnn",
+                            "BaseDatosDestinoCnn": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Bd",
+                            "UsuarioDestino": "@pipeline().parameters.SybaseIsybwebcache_I_Ley_Usr",
+                            "PathTemp": "@pipeline().parameters.PathTemp",
+                            "NombreJob": "@pipeline().parameters.NombreJob"
+                        }
+                    },
+                    "staging": {},
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "Fine"
+                }
+            }
+        ],
+        "parameters": {
+            "FechaProceso": {
+                "type": "string"
+            },
+            "NombreJob": {
+                "type": "string",
+                "defaultValue": "J016_Rco"
+            },
+            "SybaseIsybwebcache_I_Ley_Cnn": {
+                "type": "string"
+            },
+            "SybaseIsybwebcache_I_Ley_Usr": {
+                "type": "string"
+            },
+            "SybaseIsybwebcache_I_Ley_Bd": {
+                "type": "string"
+            },
+            "PathTemp": {
+                "type": "string"
+            }
+        },
+        "annotations": []
+    }
+}

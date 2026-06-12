@@ -1,0 +1,11 @@
+{
+    "name": "LS_AzureKeyVault",
+    "properties": {
+        "description": "Key Vault para credenciales de las conexiones Sybase (reemplaza valores cifrados {iisenc}... de Datastage).",
+        "annotations": [],
+        "type": "AzureKeyVault",
+        "typeProperties": {
+            "baseUrl": "https://<nombre-keyvault>.vault.azure.net/"
+        }
+    }
+}

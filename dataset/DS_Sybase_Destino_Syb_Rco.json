@@ -1,0 +1,33 @@
+{
+    "name": "DS_Sybase_Destino_Syb_Rco",
+    "properties": {
+        "description": "Tabla destino syb_rco en base Isybwebcache. Equivale al stage 'Syb_Rco' (DRSConnectorPX, DOUPDATE=4 -> upsert) del job J016_Rco_N2_1_Carga.",
+        "linkedServiceName": {
+            "referenceName": "LS_Sybase_Destino_Isybwebcache",
+            "type": "LinkedServiceReference",
+            "parameters": {
+                "ServidorBD": "@dataset().ServidorBD",
+                "BaseDatos": "@dataset().BaseDatos",
+                "Usuario": "@dataset().Usuario"
+            }
+        },
+        "parameters": {
+            "ServidorBD": {
+                "type": "string"
+            },
+            "BaseDatos": {
+                "type": "string"
+            },
+            "Usuario": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "SybaseTable",
+        "schema": [],
+        "typeProperties": {
+            "schema": "dbo",
+            "table": "syb_rco"
+        }
+    }
+}

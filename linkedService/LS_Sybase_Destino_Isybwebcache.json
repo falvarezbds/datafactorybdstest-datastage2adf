@@ -1,0 +1,33 @@
+{
+    "name": "LS_Sybase_Destino_Isybwebcache",
+    "properties": {
+        "description": "Conexión Sybase ASE - Base Isybwebcache (destino carga RCO). Equivale a parámetros $SybaseIsybwebcache_I_Ley_Cnn/Usr/Pwd/Bd del job J016_Rco_N2_1_Carga.",
+        "annotations": [],
+        "parameters": {
+            "ServidorBD": {
+                "type": "string"
+            },
+            "BaseDatos": {
+                "type": "string"
+            },
+            "Usuario": {
+                "type": "string"
+            }
+        },
+        "type": "Sybase",
+        "typeProperties": {
+            "server": "@{linkedService().ServidorBD}",
+            "database": "@{linkedService().BaseDatos}",
+            "authenticationType": "Basic",
+            "userName": "@{linkedService().Usuario}",
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "LS_AzureKeyVault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "SybaseIsybwebcache-I-Ley-Pwd"
+            }
+        }
+    }
+}

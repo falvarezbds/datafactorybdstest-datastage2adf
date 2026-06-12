@@ -1,0 +1,63 @@
+{
+    "name": "PL_J016_Rco_N1_1_Extraccion",
+    "properties": {
+        "description": "Migración del job J016_Rco_N1_1_Extraccion (extracción RCO desde Sybase Ulysses_II, transformación y dedup, escritura a staging).",
+        "activities": [
+            {
+                "name": "DF_Extraccion_RCO",
+                "type": "ExecuteDataFlow",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "DF_J016_Rco_N1_Extraccion",
+                        "type": "DataFlowReference",
+                        "parameters": {
+                            "BaseDatosOrigen": "@pipeline().parameters.SybaseUlysses_II_Ley_Bd_Dgc",
+                            "ServidorOrigen": "@pipeline().parameters.SybaseUlysses_II_Ley_Cnn",
+                            "BaseDatosOrigenCnn": "@pipeline().parameters.SybaseUlysses_II_Ley_Bd_Dgc",
+                            "UsuarioOrigen": "@pipeline().parameters.SybaseUlysses_II_Ley_Usr",
+                            "PathTemp": "@pipeline().parameters.PathTemp",
+                            "NombreJob": "@pipeline().parameters.NombreJob"
+                        }
+                    },
+                    "staging": {},
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "Fine"
+                }
+            }
+        ],
+        "parameters": {
+            "FechaProceso": {
+                "type": "string"
+            },
+            "NombreJob": {
+                "type": "string",
+                "defaultValue": "J016_Rco"
+            },
+            "SybaseUlysses_II_Ley_Cnn": {
+                "type": "string"
+            },
+            "SybaseUlysses_II_Ley_Usr": {
+                "type": "string"
+            },
+            "SybaseUlysses_II_Ley_Bd_Dgc": {
+                "type": "string"
+            },
+            "PathTemp": {
+                "type": "string"
+            }
+        },
+        "annotations": []
+    }
+}

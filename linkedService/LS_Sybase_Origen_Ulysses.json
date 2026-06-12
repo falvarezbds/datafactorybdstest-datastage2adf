@@ -1,0 +1,33 @@
+{
+    "name": "LS_Sybase_Origen_Ulysses",
+    "properties": {
+        "description": "Conexión Sybase ASE - Base Ulysses_II (origen extracción RCO). Equivale a parámetros $SybaseUlysses_II_Ley_Cnn/Usr/Pwd/Bd_Dgc del job J016_Rco_N1_1_Extraccion.",
+        "annotations": [],
+        "parameters": {
+            "ServidorBD": {
+                "type": "string"
+            },
+            "BaseDatos": {
+                "type": "string"
+            },
+            "Usuario": {
+                "type": "string"
+            }
+        },
+        "type": "Sybase",
+        "typeProperties": {
+            "server": "@{linkedService().ServidorBD}",
+            "database": "@{linkedService().BaseDatos}",
+            "authenticationType": "Basic",
+            "userName": "@{linkedService().Usuario}",
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "LS_AzureKeyVault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "SybaseUlysses-II-Ley-Pwd"
+            }
+        }
+    }
+}

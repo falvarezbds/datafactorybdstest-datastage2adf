@@ -1,0 +1,57 @@
+{
+    "name": "DF_J016_Rco_N2_Carga",
+    "properties": {
+        "description": "Equivalente al job J016_Rco_N2_1_Carga: lee el dataset de staging generado por DF_J016_Rco_N1_Extraccion (stage Ds_Syb_Rco) y lo carga en la tabla syb_rco de Isybwebcache (stage Syb_Rco, DRSConnectorPX DOUPDATE=4 -> Insert/Update por clave).",
+        "type": "MappingDataFlow",
+        "typeProperties": {
+            "sources": [
+                {
+                    "dataset": {
+                        "referenceName": "DS_Staging_Extraccion",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "PathTemp": "@$PathTemp",
+                            "NombreJob": "@$NombreJob"
+                        }
+                    },
+                    "name": "DsSybRco"
+                }
+            ],
+            "sinks": [
+                {
+                    "dataset": {
+                        "referenceName": "DS_Sybase_Destino_Syb_Rco",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "ServidorBD": "@$ServidorDestino",
+                            "BaseDatos": "@$BaseDatosDestinoCnn",
+                            "Usuario": "@$UsuarioDestino"
+                        }
+                    },
+                    "name": "SybRco"
+                }
+            ],
+            "transformations": [],
+            "scriptLines": [
+                "parameters{",
+                "     ServidorDestino as string,",
+                "     BaseDatosDestinoCnn as string,",
+                "     UsuarioDestino as string,",
+                "     PathTemp as string,",
+                "     NombreJob as string",
+                "}",
+                "source(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     format: 'parquet') ~> DsSybRco",
+                "DsSybRco sink(allowSchemaDrift: true,",
+                "     validateSchema: false,",
+                "     deletable: false,",
+                "     insertable: true,",
+                "     updateable: true,",
+                "     upsertable: true,",
+                "     keys: ['rco_cic_cli', 'rco_cic_ope'],",
+                "     format: 'table') ~> SybRco"
+            ]
+        }
+    }
+}

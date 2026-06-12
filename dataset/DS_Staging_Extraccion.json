@@ -1,0 +1,40 @@
+{
+    "name": "DS_Staging_Extraccion",
+    "properties": {
+        "description": "Archivo de staging en formato Parquet que reemplaza el Dataset paralelo '#$PathTemp##$NombreJob#_Extraccion.ds' usado entre los jobs N1 (extracción) y N2 (carga).",
+        "linkedServiceName": {
+            "referenceName": "LS_ADLS_Staging",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "PathTemp": {
+                "type": "string"
+            },
+            "NombreJob": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Parquet",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileSystem": "staging",
+                "folderPath": "@{dataset().PathTemp}",
+                "fileName": "@{concat(dataset().NombreJob, '_Extraccion.parquet')}"
+            },
+            "compressionCodec": "snappy"
+        },
+        "schema": [
+            { "name": "rco_cic_cli", "type": "String" },
+            { "name": "rco_cic_ope", "type": "String" },
+            { "name": "rco_fec_trn", "type": "Date" },
+            { "name": "rco_cod_sta", "type": "String" },
+            { "name": "rco_cod_opr", "type": "String" },
+            { "name": "cli_idc", "type": "Decimal", "precision": 18, "scale": 0 },
+            { "name": "cli_vrt", "type": "String" },
+            { "name": "cli_cod_bca", "type": "String" },
+            { "name": "cli_ind_per_emp", "type": "String" }
+        ]
+    }
+}

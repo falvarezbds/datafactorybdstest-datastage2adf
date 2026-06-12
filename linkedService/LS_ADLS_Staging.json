@@ -1,0 +1,11 @@
+{
+    "name": "LS_ADLS_Staging",
+    "properties": {
+        "description": "Almacenamiento de staging (reemplaza el área de Datasets paralelos de DataStage, $PathTemp).",
+        "annotations": [],
+        "type": "AzureBlobFS",
+        "typeProperties": {
+            "url": "https://<storageaccount>.dfs.core.windows.net"
+        }
+    }
+}
